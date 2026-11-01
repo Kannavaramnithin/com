@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KN SHOP - My Orders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script type="importmap">
+      {
+        "imports": {
+          "firebase/app": "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js",
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js",
+          "firebase/analytics": "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js"
+        }
+      }
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <button onclick="window.history.back()" class="back-btn" style="background:none; border:none; cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button>
+                <img src="ganesha-logo.png" class="logo-icon" alt="KN Shop Logo">
+                <span class="logo-text">KN SHOP</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="products-section" style="padding-top: 4rem;">
+        <h2 class="section-title">My Orders</h2>
+        <div id="ordersContainer" style="max-width: 800px; margin: 0 auto;">
+            <p id="loadingOrders" class="text-center text-muted">Loading your amazing orders...</p>
+        </div>
+    </main>
+
+    <script type="module" src="js/orders.js"></script>
+</body>
+</html>

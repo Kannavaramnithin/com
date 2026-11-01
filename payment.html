@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KN SHOP - Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script type="importmap">
+      {
+        "imports": {
+          "firebase/app": "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js",
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js",
+          "firebase/analytics": "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js"
+        }
+      }
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <button onclick="window.history.back()" class="back-btn" style="background:none; border:none; cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button>
+                <img src="ganesha-logo.png" class="logo-icon" alt="KN Shop Logo">
+                <span class="logo-text">KN SHOP</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Back to Store</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="products-section" style="padding-top: 4rem;">
+        <h2 class="section-title">Complete Payment</h2>
+        <div style="display: flex; gap: 2rem; max-width: 1000px; margin: 0 auto; flex-wrap: wrap; justify-content: center;">
+            <div class="product-card" style="flex: 1; min-width: 300px; padding: 2rem;">
+                <h3 class="product-title" style="margin-bottom: 1.5rem;">Select Payment Method</h3>
+                <form id="paymentForm">
+                    <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
+                        <label style="display: flex; align-items: center; gap: 1rem; cursor: pointer; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            <input type="radio" name="paymentOption" value="cod" required>
+                            <div>
+                                <strong>Cash on Delivery (COD)</strong>
+                                <p style="color: var(--text-muted); font-size: 0.875rem;">Pay when you receive the order</p>
+                            </div>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 1rem; cursor: pointer; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            <input type="radio" name="paymentOption" value="online" required>
+                            <div>
+                                <strong>Online Payment</strong>
+                                <p style="color: var(--text-muted); font-size: 0.875rem;">Credit/Debit Card via Mock Gateway</p>
+                            </div>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn primary-btn w-100" id="placeOrderBtn">Place Order</button>
+                    <div id="paymentError" class="error-msg" style="margin-top: 1rem;"></div>
+                </form>
+            </div>
+            
+            <div class="product-card" style="flex: 1; min-width: 300px; padding: 2rem; background: var(--surface-color);">
+                <h3 class="product-title" style="margin-bottom: 1.5rem;">Order Summary</h3>
+                <div id="orderSummaryContainer"></div>
+                
+                <div style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="couponInput" placeholder="Enter coupon code" 
+                               style="flex: 1; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); outline: none;">
+                        <button type="button" id="applyCouponBtn" class="btn primary-btn" style="padding: 0.75rem 1.5rem;">Apply</button>
+                    </div>
+                    <div id="couponMessage" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
+                    <a href="coupons.html" target="_blank" style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: var(--primary-color); text-decoration: none;">View available coupons <i class="fa-solid fa-external-link"></i></a>
+                </div>
+
+                <div id="discountRow" style="display: none; justify-content: space-between; margin-top: 1rem; color: #27ae60; font-weight: 500;">
+                    <span>Discount:</span>
+                    <span id="discountAmount">-₹0.00</span>
+                </div>
+
+                <div style="border-top: 1px solid var(--border-color); margin-top: 1rem; padding-top: 1rem; display: flex; justify-content: space-between; font-weight: bold; font-size: 1.25rem;">
+                    <span>Total:</span>
+                    <span id="finalTotal">₹0.00</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content center-modal text-center">
+            <i class="fa-solid fa-circle-check success-icon"></i>
+            <h2 style="margin-bottom: 1rem;">Order Placed Successfully!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Your order (<span id="placedOrderId"></span>) has been confirmed.</p>
+            <button class="btn primary-btn" id="returnHomeBtn">Return to Store</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/payment.js"></script>
+</body>
+</html>

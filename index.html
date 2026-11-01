@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="Vaxbau_yI1_DWS2jKJiJtSN4bZigOnjBI_j6NJqICzk" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KN SHOP - Premium Products</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Firebase Import Map -->
+    <script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js",
+            "firebase/analytics": "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js"
+        }
+    }
+    </script>
+    <!-- Immediate Navbar Sync Logic (Anti-Flicker) -->
+    <script>
+        const cachedUser = JSON.parse(localStorage.getItem('user'));
+        if (cachedUser && (cachedUser.uid || cachedUser.name)) {
+            document.documentElement.classList.add('user-cached');
+            window.addEventListener('DOMContentLoaded', () => {
+                // Pre-populate if DOM is ready but JS not yet loaded
+                const navNameDisplay = document.getElementById('userNameDisplay');
+                const welcomeNameDisplay = document.getElementById('welcomeName');
+                const userAvatar = document.getElementById('userAvatar');
+                const userGreetingNav = document.getElementById('userGreeting');
+                
+                if (navNameDisplay) navNameDisplay.innerText = cachedUser.name;
+                if (welcomeNameDisplay) welcomeNameDisplay.innerText = cachedUser.name;
+                if (userGreetingNav) userGreetingNav.style.display = 'flex';
+                
+                // Show/hide based on cache
+                const guestBtns = document.getElementById('guestBtns');
+                if (guestBtns) guestBtns.style.display = 'none';
+                const logoutBtn = document.getElementById('logoutBtn');
+                const userGreeting = document.getElementById('userGreeting');
+                
+                if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+                if (userGreeting) userGreeting.style.display = 'flex';
+                ['ordersLink', 'wishlistLink', 'couponsLink', 'dashboardLink'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'block';
+                });
+            });
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <!-- Overlay -->
+        <div class="nav-overlay" id="navOverlay"></div>
+
+        <div class="nav-container">
+            <!-- Left: Toggle -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Open Navigation Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <!-- Brand Logo -->
+            <a href="index.html" class="logo">
+                <img src="ganesha-logo.png" class="logo-icon" alt="KN SHOP Logo">
+                <span class="logo-text">KN SHOP</span>
+            </a>
+
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search products...">
+                <button id="searchBtn"><i class="fa-solid fa-search"></i></button>
+            </div>
+
+            <!-- Desktop Links (Hidden on Mobile) -->
+            <ul class="nav-links desktop-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+            </ul>
+
+            <!-- Right Icons -->
+            <div class="nav-actions">
+                <!-- User Area (Always for Desktop) -->
+                <div class="desktop-user-area">
+                    <div id="guestBtns">
+                        <button class="btn secondary-btn" id="loginBtn">Login</button>
+                    </div>
+
+                    <div id="userGreeting" class="user-profile-dropdown" style="display: none;">
+                        <div class="user-greeting-btn" id="userDropdownBtn">
+                            <i class="fa-solid fa-circle-user"></i>
+                            <span id="userNameDisplay">User</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item"><i class="fa-solid fa-circle-user"></i> My Profile</a>
+                            <a href="orders.html" class="dropdown-item"><i class="fa-solid fa-box-open"></i> My Orders</a>
+                            <a href="wishlist.html" class="dropdown-item"><i class="fa-solid fa-heart"></i> My Wishlist</a>
+                            <div class="dropdown-divider"></div>
+                            <button id="logoutBtnDropdown" class="dropdown-item logout-item"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="cartBtn" class="icon-btn cart-toggle" aria-label="Open Shopping Bag">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span id="cartCount" class="badge">0</span>
+                </button>
+            </div>
+
+            <!-- Mobile Drawer -->
+            <div class="nav-drawer" id="navDrawer">
+                <div class="drawer-header">
+                    <div class="user-info" id="drawerUserDisplay">
+                        <i class="fa-solid fa-circle-user"></i>
+                        <span>Welcome, Guest</span>
+                    </div>
+                </div>
+                
+                <ul class="drawer-links">
+                    <li class="nav-section-label">Main Menu</li>
+                    <li><a href="index.html" class="active"><i class="fa-solid fa-house"></i> Home</a></li>
+                    <li><a href="shop.html"><i class="fa-solid fa-store"></i> Shop</a></li>
+                    
+                    <li class="nav-section-label">Account</li>
+                    <li><a href="#" class="cart-toggle"><i class="fa-solid fa-bag-shopping"></i> My Cart</a></li>
+                    <li class="auth-only"><a href="profile.html"><i class="fa-solid fa-user"></i> My Profile</a></li>
+                    <li class="auth-only"><a href="orders.html"><i class="fa-solid fa-box-archive"></i> My Orders</a></li>
+                    <li class="auth-only"><a href="wishlist.html"><i class="fa-solid fa-heart"></i> My Wishlist</a></li>
+                    
+                    <li class="nav-divider"></li>
+                    <li id="guestLinks">
+                        <a href="#" id="loginLink"><i class="fa-solid fa-right-to-bracket"></i> Login / Signup</a>
+                    </li>
+                    <li id="logoutLinkItem" style="display: none;">
+                        <a href="#" id="logoutBtnDrawer" class="logout-text"><i class="fa-solid fa-power-off"></i> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h4>Premium Tech & Style</h4>
+                <h1>Discover New Horizons</h1>
+                <p>Elevate your lifestyle with our carefully curated collection of electronics and fashion essentials.</p>
+                <a href="shop.html">
+  <button class="btn primary-btn large">Shop Now</button>
+</a>
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section class="premium-categories">
+            <div class="category-scroll">
+                <div class="category-item active" data-filter="all">
+                    <div class="category-icon-box"><i class="fa-solid fa-layer-group"></i></div>
+                    <span>For You</span>
+                </div>
+                <div class="category-item" data-filter="fashion">
+                    <div class="category-icon-box"><i class="fa-solid fa-shirt"></i></div>
+                    <span>Fashion</span>
+                </div>
+                <div class="category-item" data-filter="electronics">
+                    <div class="category-icon-box"><i class="fa-solid fa-laptop"></i></div>
+                    <span>Tech</span>
+                </div>
+                <div class="category-item" data-filter="home">
+                    <div class="category-icon-box"><i class="fa-solid fa-couch"></i></div>
+                    <span>Home</span>
+                </div>
+                <div class="category-item" data-filter="accessories">
+                    <div class="category-icon-box"><i class="fa-solid fa-gem"></i></div>
+                    <span>Accessories</span>
+                </div>
+                <div class="category-item" data-filter="wellness">
+                    <div class="category-icon-box"><i class="fa-solid fa-leaf"></i></div>
+                    <span>Wellness</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Grid -->
+        <section class="products-section">
+            <h2 class="section-title">Latest Arrivals</h2>
+            <div id="loadingIndicator" class="text-center" style="display: none;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2.5rem; color: var(--primary-color);"></i>
+                <p style="margin-top: 1rem; color: var(--text-muted);">Finding products...</p>
+            </div>
+            <div id="products" class="product-grid"></div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content side-modal">
+            <div class="modal-header">
+                <h2>Your Bag</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <p class="empty-cart-msg">Your bag is empty.</p>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Subtotal:</span>
+                    <span id="cartTotalValue">₹0.00</span>
+                </div>
+                <button id="checkoutBtn" class="btn primary-btn w-100" disabled>Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content center-modal">
+            <div class="modal-header">
+                <h2 id="authTitle">Sign In</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="auth-form-container">
+                <form id="authForm">
+                    <div class="form-group" id="nameGroup" style="display: none;">
+                        <label for="authName">Full Name</label>
+                        <input type="text" id="authName" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="authEmail">Email address</label>
+                        <input type="email" id="authEmail" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="authPassword">Password</label>
+                        <input type="password" id="authPassword" required placeholder="Enter your password">
+                    </div>
+                    <div id="authError" class="error-msg"></div>
+                    <button type="submit" class="btn primary-btn w-100" id="authSubmitBtn">Login</button>
+                </form>
+                
+                <div class="auth-divider"><span>or</span></div>
+                
+                <div id="socialAuthButtons">
+                    <button id="googleSignInBtn" onclick="loginWithGoogle()" class="btn secondary-btn w-100 mb-3"><i class="fa-brands fa-google"></i> Continue with Google</button>
+                    <button id="phoneSignInSwitchBtn" class="btn secondary-btn w-100"><i class="fa-solid fa-phone"></i> Phone Number</button>
+                </div>
+
+                <p class="auth-switch">
+                    <span id="authSwitchText">Don't have an account?</span>
+                    <button id="authSwitchBtn" class="text-btn">Register</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phone Auth Modal (Moved out for consistency) -->
+    <div id="phoneAuthModal" class="modal">
+        <div class="modal-content center-modal">
+            <div class="modal-header">
+                <h2>Login with Phone</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="auth-form-container">
+                <div id="phoneInputSection">
+                    <div class="phone-input-group">
+                        <span class="country-code">+91</span>
+                        <input type="tel" id="phoneNumber" placeholder="9876543210" maxlength="10">
+                    </div>
+                    <div id="recaptcha-container"></div>
+                    <button id="sendOTPBtn" class="btn primary-btn w-100 mt-3" disabled>Send One-Time Password</button>
+                </div>
+
+                <div id="otpSection" style="display: none;">
+                    <p class="text-muted mb-3">Enter the 6-digit code sent to <span id="sentNumber"></span></p>
+                    <input type="text" id="otpCode" placeholder="Enter 6-digit OTP" maxlength="6" class="otp-input">
+                    <button id="verifyOTPBtn" class="btn primary-btn w-100 mt-3">Verify & Login</button>
+                    <button id="resendOTPBtn" class="btn text-btn mt-2">Didn't get the code? Resend</button>
+                </div>
+                
+                <p class="auth-toggle mt-3">
+                    Prefer email? <a href="#" id="emailAuthSwitchBtn">Back to email login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content center-modal product-detail-modal">
+            <button class="close-btn product-modal-close" id="productModalClose">&times;</button>
+            <div class="product-detail-container">
+                <!-- Left: Image Gallery -->
+                <div class="product-gallery">
+                    <div class="main-image-container">
+                        <img id="modalMainImage" src="" alt="Product Image">
+                    </div>
+                    <div class="thumbnail-grid" id="thumbnailContainer"></div>
+                </div>
+
+                <!-- Right: Product Info + Description -->
+                <div class="product-detail-info">
+                    <div class="product-detail-header">
+                        <span class="product-detail-badge">Premium Quality</span>
+                        <h2 id="modalProductTitle" class="product-detail-title">Product Title</h2>
+                        <p id="modalProductPrice" class="detail-price">₹0.00</p>
+                    </div>
+
+                    <!-- Product Description Section -->
+                    <div class="product-description-section">
+                        <div class="description-block">
+                            <h4 class="desc-heading">
+                                <i class="fa-solid fa-align-left"></i>
+                                About This Product
+                            </h4>
+                            <p id="modalProductDescription" class="detail-description">
+                                Elevate your style with this premium item from our latest collection.
+                            </p>
+                        </div>
+
+                        <div class="features-block" id="featuresBlock">
+                            <h4 class="desc-heading">
+                                <i class="fa-solid fa-star"></i>
+                                Key Features
+                            </h4>
+                            <ul class="features-list" id="modalFeaturesList"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Size Selector (Fashion only) -->
+                    <div class="size-selector-container" id="sizeSelectorContainer" style="display: none;">
+                        <label>Select Size</label>
+                        <div class="size-options" id="sizeOptions"></div>
+                    </div>
+
+                    <!-- Add to Cart -->
+                    <button id="modalAddToCartBtn" class="btn primary-btn w-100 modal-add-btn">
+                        <i class="fa-solid fa-cart-shopping"></i> Add to Bag
+                    </button>
+                    <div id="modalCartStatus" class="cart-status-msg" style="display: none;">
+                        <i class="fa-solid fa-check-circle"></i> Added to your bag!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Side Drawer -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content side-drawer-right">
+            <div class="drawer-header">
+                <h3><i class="fa-solid fa-bag-shopping"></i> Shopping Bag</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="drawer-body" id="cartItems">
+                <div class="empty-cart-msg">
+                    <p>Your bag is empty.</p>
+                    <a href="shop.html" class="btn secondary-btn mt-3">Start Shopping</a>
+                </div>
+            </div>
+            <div class="drawer-footer">
+                <div class="total-row">
+                    <span>Subtotal:</span>
+                    <span id="cartTotalValue">₹0.00</span>
+                </div>
+                <button id="checkoutBtn" class="btn primary-btn w-100" disabled>Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <div class="logo">
+                    <img src="ganesha-logo.png" class="logo-icon" alt="KN Shop Logo">
+                    <span class="logo-text">KN Shop</span>
+                </div>
+                <p class="mt-3 text-muted">Premium selection of curated electronics and lifestyle essentials. Quality products, delivered with care.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#">Shop</a></li>
+                    <li><a href="orders.html">Orders</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <a href="https://maps.app.goo.gl/YjAgWg2snTM5G9yG6" target="_blank" rel="noopener noreferrer">
+                    <p><i class="fa-solid fa-location-dot"></i> Srikalahasti</p>
+                </a>
+                <a href="tel:+919999999999">
+                    <p><i class="fa-solid fa-phone"></i> +91 99999 99999</p>
+                </a>
+                <a href="mailto:nithinkannavaram@gmail.com">
+                    <p><i class="fa-solid fa-envelope"></i> nithinkannavaram@gmail.com</p>
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 KN SHOP. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
